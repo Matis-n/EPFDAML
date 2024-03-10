@@ -62,14 +62,14 @@ kwargs = {
     "base_dataset_name" : "2",
     "n_val" : 362,
     "models" : [MLPWrapper], # [LeNetWrapper, MLPWrapper, MultiSVR, ChainSVR, RFR],    
-    "countries" : ["DEBE"], # "DE", "BE"],
+    "countries" : ["FRDE"], # "DE", "BE"],
     
     # GRID SEARCH PARAMS
     "fast" : True,
     "n_combis" : 4,
     "restart" : True,
     "n_rep" : 1,
-    "stop_after" : -1,
+    "stop_after" : 100,
     "n_cpus" : -1,
 
     # RECALIBRATION PARAMS
