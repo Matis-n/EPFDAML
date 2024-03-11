@@ -22,7 +22,7 @@ mu = work.analysis.metrics_utils
 
 datasets = ["validation", "test"] #, "test_recalibrated"]
 versions = ["2"]
-countries = ["FR"] #, "DE", "BE")
+countries = ["FRDEBE"] #, "DE", "BE")
 models = [MLPWrapper]# , ChainSVR, MultiSVR, RFR) #LeNetWrapper,
 metrics = [smape, mae, dae, rmae]
 
@@ -33,18 +33,21 @@ results = mu.compute_metrics(predictions, model_wrappers, metrics, real_prices,
                              naive_forecasts)
 dms = mu.compute_pvalues(predictions, model_wrappers, real_prices)
 
-print(results)
+print(f'results: {results}\n')
+print(f'dms: {dms}')
+
+
 
 # All version individually
-version = "2"
-res_val = mu.plot_scaled_metrics(results, model_wrappers, "validation",
-                                 version, metrics)
-res_test = mu.plot_scaled_metrics(results, model_wrappers, "test",
-                                  version, metrics)
+# version = "2"
+# res_val = mu.plot_scaled_metrics(results, model_wrappers, "validation",
+#                                  version, metrics)
+# res_test = mu.plot_scaled_metrics(results, model_wrappers, "test",
+#                                   version, metrics)
 
-# res_test_recalibrated = mu.plot_scaled_metrics(
-#     results, model_wrappers, "test_recalibrated", version, metrics)
+# # res_test_recalibrated = mu.plot_scaled_metrics(
+# #     results, model_wrappers, "test_recalibrated", version, metrics)
 
-res_val.columns = [c + "_val" for c in res_val.columns]
-res_test.columns = [c + "_test" for c in res_test.columns]
-final = mu.plot_summary(res_val, res_test)# , res_test_recalibrated)
+# res_val.columns = [c + "_val" for c in res_val.columns]
+# res_test.columns = [c + "_test" for c in res_test.columns]
+# final = mu.plot_summary(res_val, res_test)# , res_test_recalibrated)

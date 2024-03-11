@@ -656,12 +656,26 @@ def compute_metrics(predictions, model_wrappers, metrics, real_prices, naive_for
                         if y_pred is not None:
                             for (k, metric) in enumerate(metrics):
                                 #print(version, dataset, country, model_wrapper, metric)
-                                if metric == rmae:
-                                    value = metric(y_true, y_pred,
-                                                   naive_forecasts[dataset][country])
-                                else: value = metric(y_true, y_pred)
-                
-                                results[version][dataset][i, j, k] = value
+                                if y_pred.shape[1]/24 > 1:
+                                    y_true_tm = y_true.reshape(y_true.shape[0], 24, -1)
+                                    y_pred_tm = y_pred.reshape(y_pred.shape[0], 24, -1)
+                                    naive_forecasts_tm = naive_forecasts[dataset][country].reshape(naive_forecasts[dataset][country].shape[0], 24, -1)
+                                    results[version][dataset] = -np.ones((len(countries), nmw, len(metrics), 3))
+                                    for l in range(y_true_tm.shape[2]):
+                                        if metric == rmae:
+                                            value = metric(y_true_tm[:, :, l], y_pred_tm[:, :, l],
+                                                        naive_forecasts_tm[:, :, l])
+                                        else: value = metric(y_true_tm[:, :, l], y_pred_tm[:, :, l])
+                                        
+                                        # dict_l_cc = {0:"FR", 1:"DE", 2:"BE"}
+                                        results[version][dataset][i, j, k, l] = value
+                                else : 
+                                    if metric == rmae:
+                                        value = metric(y_true, y_pred,
+                                                    naive_forecasts[dataset][country])
+                                    else: value = metric(y_true, y_pred)
+                    
+                                    results[version][dataset][i, j, k] = value
     
     return results
 
@@ -696,6 +710,7 @@ def load_forecasts(datasets, countries, models, versions, lago_params):
                                         name, f"EPF{version}_{country}", ""))
                         
                         for model_wrapper in model_wrappers_temp:
+                            # TODO 
                             try:
                                 all_prevs = load_prevs_mw(model_wrapper, dataset).values
                             except: all_prevs = None
@@ -738,7 +753,34 @@ def load_real_prices(countries, dataset=""):
     real_prices = {"train" : {}, "test" : {}, "validation": {}, "test_recalibrated" : {}}
     naive_forecasts = {"train" : {}, "test" : {}, "validation": {}, "test_recalibrated" : {}}
     for country in countries:
-        if country == "FRDEBE": pass
+        if country == "FRDEBE": 
+            if dataset in ("", "2", "3"): nval = 362
+            else: nval = 365 
+            spliter = MySplitter(nval, shuffle=False)
+            # Instantiate a default Naive Wrapper
+            if dataset not in ('FRBL8', 'FRBL10', 'FRBL11'):
+                labels = [f"FR_price_{i}" for i in range(24)] + [f"DE_price_{i}" for i in range(24)] + [f"BE_price_{i}" for i in range(24)]
+            else:
+                labels = ["FR_price", ]
+            model_wrapper = Naive("NAIVE", f"EPF{dataset}_{country}", labels) 
+
+            # Fill test sets
+            real_prices["test"][country] = model_wrapper.load_test_dataset()[1] 
+            real_prices["test_recalibrated"][country] = model_wrapper.load_test_dataset()[1]   
+            
+            # Need to re-split for taking the validation prices
+            X, y = model_wrapper.load_train_dataset()
+            ((Xtr, ytr), (Xv, yv)) = spliter(X, y)
+            real_prices["validation"][country] = yv
+            real_prices["train"][country] = ytr            
+            
+            # Also computes the naive forecasts    
+            naive_forecasts["validation"][country] = model_wrapper.predict(None, Xv) 
+            naive_forecasts["train"][country] = model_wrapper.predict(None, Xtr)           
+            Xt, yt = model_wrapper.load_test_dataset()
+            naive_forecasts["test"][country] = model_wrapper.predict(None, Xt)
+            naive_forecasts["test_recalibrated"][country] = model_wrapper.predict(None, Xt)           
+ 
         else:
             if dataset in ("", "2", "3"): nval = 362
             else: nval = 365       
