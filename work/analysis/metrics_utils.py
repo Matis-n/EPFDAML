@@ -644,39 +644,41 @@ def compute_metrics(predictions, model_wrappers, metrics, real_prices, naive_for
         for dataset in datasets:
             countries = [k for k in predictions[version][dataset].keys()]
             if len(countries) > 0:
-                nmw = len(model_wrappers[version][dataset][countries[0]])
+                if "FRDEBE" in countries:
+                    test_country = "FRDEBE"
+                    countries = ["FR", "DE", "BE"]
+                else: test_country = countries[0]
+                nmw = len(model_wrappers[version][dataset][test_country])
                 results[version][dataset] = -np.ones((len(countries), nmw, len(metrics)))
-            
                 for (i, country) in enumerate(countries):
-                    y_true = real_prices[dataset][country]
-            
+                    if test_country == "FRDEBE":
+                        country2 = "FRDEBE"
+                    else :
+                        country2 = country
+                    y_true = real_prices[dataset][country2]
                     for (j, model_wrapper) in enumerate(
-                            model_wrappers[version][dataset][country]):
-                        y_pred = predictions[version][dataset][country][model_wrapper]
+                            model_wrappers[version][dataset][country2]):
+                        y_pred = predictions[version][dataset][country2][model_wrapper]
                         if y_pred is not None:
                             for (k, metric) in enumerate(metrics):
-                                #print(version, dataset, country, model_wrapper, metric)
+                                #print(version, dataset, country2, model_wrapper, metric)
                                 if y_pred.shape[1]/24 > 1:
                                     y_true_tm = y_true.reshape(y_true.shape[0], 24, -1)
                                     y_pred_tm = y_pred.reshape(y_pred.shape[0], 24, -1)
-                                    naive_forecasts_tm = naive_forecasts[dataset][country].reshape(naive_forecasts[dataset][country].shape[0], 24, -1)
-                                    results[version][dataset] = -np.ones((len(countries), nmw, len(metrics), 3))
-                                    for l in range(y_true_tm.shape[2]):
-                                        if metric == rmae:
-                                            value = metric(y_true_tm[:, :, l], y_pred_tm[:, :, l],
-                                                        naive_forecasts_tm[:, :, l])
-                                        else: value = metric(y_true_tm[:, :, l], y_pred_tm[:, :, l])
-                                        
-                                        # dict_l_cc = {0:"FR", 1:"DE", 2:"BE"}
-                                        results[version][dataset][i, j, k, l] = value
+                                    naive_forecasts_tm = naive_forecasts[dataset][country2].reshape(naive_forecasts[dataset][country2].shape[0], 24, -1)
+                                    # for l in range(y_true_tm.shape[2]):
+                                    if metric == rmae:
+                                        value = metric(y_true_tm[:, :, i], y_pred_tm[:, :, i],
+                                                    naive_forecasts_tm[:, :, i])
+                                    else: value = metric(y_true_tm[:, :, i], y_pred_tm[:, :, i])
+                                    results[version][dataset][i, j, k] = value
                                 else : 
                                     if metric == rmae:
                                         value = metric(y_true, y_pred,
-                                                    naive_forecasts[dataset][country])
+                                                    naive_forecasts[dataset][country2])
                                     else: value = metric(y_true, y_pred)
-                    
                                     results[version][dataset][i, j, k] = value
-    
+    # results = {k: pandas.DataFrame(v, columns=[m.__name__ for m in metrics], index=countries) for (k, v) in results.items()}
     return results
 
 def load_forecasts(datasets, countries, models, versions, lago_params):
