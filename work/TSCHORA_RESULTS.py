@@ -66,9 +66,9 @@ kwargs = {
     
     # GRID SEARCH PARAMS
     "fast" : False,
-    "n_combis" : 100,
-    "restart" : True,
-    "n_rep" : 10,
+    "n_combis" : 200,
+    "restart" : False,
+    "n_rep" : 20,
     "stop_after" : 100,
     "n_cpus" : -1,
 

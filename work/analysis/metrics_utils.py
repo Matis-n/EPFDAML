@@ -647,12 +647,27 @@ def compute_metrics(predictions, model_wrappers, metrics, real_prices, naive_for
                 if "FRDEBE" in countries:
                     test_country = "FRDEBE"
                     countries = ["FR", "DE", "BE"]
+                elif "FRDE" in countries:
+                    test_country = "FRDE"
+                    countries = ["FR", "DE"]
+                elif "FRBE" in countries:
+                    test_country = "FRBE"
+                    countries = ["FR", "BE"]
+                elif "DEBE" in countries:
+                    test_country = "DEBE"
+                    countries = ["DE", "BE"]
                 else: test_country = countries[0]
                 nmw = len(model_wrappers[version][dataset][test_country])
                 results[version][dataset] = -np.ones((len(countries), nmw, len(metrics)))
                 for (i, country) in enumerate(countries):
                     if test_country == "FRDEBE":
                         country2 = "FRDEBE"
+                    elif test_country == "FRDE":
+                        country2 = "FRDE"
+                    elif test_country == "FRBE":
+                        country2 = "FRBE"
+                    elif test_country == "DEBE":
+                        country2 = "DEBE"
                     else :
                         country2 = country
                     y_true = real_prices[dataset][country2]
@@ -678,7 +693,6 @@ def compute_metrics(predictions, model_wrappers, metrics, real_prices, naive_for
                                                     naive_forecasts[dataset][country2])
                                     else: value = metric(y_true, y_pred)
                                     results[version][dataset][i, j, k] = value
-    # results = {k: pandas.DataFrame(v, columns=[m.__name__ for m in metrics], index=countries) for (k, v) in results.items()}
     return results
 
 def load_forecasts(datasets, countries, models, versions, lago_params):
@@ -755,13 +769,21 @@ def load_real_prices(countries, dataset=""):
     real_prices = {"train" : {}, "test" : {}, "validation": {}, "test_recalibrated" : {}}
     naive_forecasts = {"train" : {}, "test" : {}, "validation": {}, "test_recalibrated" : {}}
     for country in countries:
-        if country == "FRDEBE": 
             if dataset in ("", "2", "3"): nval = 362
             else: nval = 365 
             spliter = MySplitter(nval, shuffle=False)
             # Instantiate a default Naive Wrapper
             if dataset not in ('FRBL8', 'FRBL10', 'FRBL11'):
-                labels = [f"FR_price_{i}" for i in range(24)] + [f"DE_price_{i}" for i in range(24)] + [f"BE_price_{i}" for i in range(24)]
+                if country == "FRDEBE": 
+                    labels = [f"FR_price_{i}" for i in range(24)] + [f"DE_price_{i}" for i in range(24)] + [f"BE_price_{i}" for i in range(24)]
+                elif country == "FRDE":
+                    labels = [f"FR_price_{i}" for i in range(24)] + [f"DE_price_{i}" for i in range(24)]
+                elif country == "FRBE":
+                    labels = [f"FR_price_{i}" for i in range(24)] + [f"BE_price_{i}" for i in range(24)]
+                elif country == "DEBE":
+                    labels = [f"DE_price_{i}" for i in range(24)] + [f"BE_price_{i}" for i in range(24)]
+                else:
+                    labels = [f"{get_country_code(country)}_price_{i}" for i in range(24)]
             else:
                 labels = ["FR_price", ]
             model_wrapper = Naive("NAIVE", f"EPF{dataset}_{country}", labels) 
@@ -783,33 +805,4 @@ def load_real_prices(countries, dataset=""):
             naive_forecasts["test"][country] = model_wrapper.predict(None, Xt)
             naive_forecasts["test_recalibrated"][country] = model_wrapper.predict(None, Xt)           
  
-        else:
-            if dataset in ("", "2", "3"): nval = 362
-            else: nval = 365       
-            spliter = MySplitter(nval, shuffle=False)            
-            # Instantiate a default Naive Wrapper
-            if dataset not in ('FRBL8', 'FRBL10', 'FRBL11'):
-                labels = [f"{get_country_code(country)}_price_{i}"
-                          for i in range(24)]
-            else:
-                labels = ["FR_price", ]
-            model_wrapper = Naive("NAIVE", f"EPF{dataset}_{country}", labels)
-            
-            # Fill test sets
-            real_prices["test"][country] = model_wrapper.load_test_dataset()[1] 
-            real_prices["test_recalibrated"][country] = model_wrapper.load_test_dataset()[1]   
-            
-            # Need to re-split for taking the validation prices
-            X, y = model_wrapper.load_train_dataset()
-            ((Xtr, ytr), (Xv, yv)) = spliter(X, y)
-            real_prices["validation"][country] = yv
-            real_prices["train"][country] = ytr            
-            
-            # Also computes the naive forecasts    
-            naive_forecasts["validation"][country] = model_wrapper.predict(None, Xv) 
-            naive_forecasts["train"][country] = model_wrapper.predict(None, Xtr)           
-            Xt, yt = model_wrapper.load_test_dataset()
-            naive_forecasts["test"][country] = model_wrapper.predict(None, Xt)
-            naive_forecasts["test_recalibrated"][country] = model_wrapper.predict(None, Xt)
-
     return real_prices, naive_forecasts
