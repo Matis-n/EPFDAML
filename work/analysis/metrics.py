@@ -18,8 +18,8 @@ mu = work.analysis.metrics_utils
 
 datasets = ["validation", "test"]
 versions = ["2"]
-countries = ["FR"]#, "DE", "BE")
-models = [MLPWrapper]#, RFR, ChainSVR, MultiSVR, LAGOWrapper)
+countries = ["FR"] # "DE", "BE"
+models = [MLPWrapper] # RFR, ChainSVR, MultiSVR, LAGOWrapper
 metrics = [smape, mae, dae, rmae]
 lago_params = {"LEAR" : (56, 84, 1092, 1456), "DNN" : (1, 2, 3, 4)}
 
