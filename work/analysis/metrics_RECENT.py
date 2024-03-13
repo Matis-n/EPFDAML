@@ -23,7 +23,7 @@ mu = work.analysis.metrics_utils
 datasets = ["validation", "test"] #, "test_recalibrated"]
 versions = ["2"]
 
-countries = ["FRBE"] #, "DE", "BE")
+countries = ["FR"] #, "DE", "BE")
 models = [MLPWrapper]# , ChainSVR, MultiSVR, RFR) #LeNetWrapper,
 metrics = [smape, mae, dae, rmae]
 
@@ -36,8 +36,8 @@ dms = mu.compute_pvalues(predictions, model_wrappers, real_prices)
 
 print(f'results: {results}\n')
 print(f'dms: {dms}')
-results_df = pandas.DataFrame(results[versions[0]]["test"].squeeze(), index=["FR",  "BE"], columns=["smape", "mae", "dae", "rmae"])
-print(results_df)
+# results_df = pandas.DataFrame(results[versions[0]]["test"].squeeze(), index=["FR"], columns=["smape", "mae", "dae", "rmae"])
+# print(f'results_df: {results_df}')
 # All version individually
 # version = "2"
 # res_val = mu.plot_scaled_metrics(results, model_wrappers, "validation",
