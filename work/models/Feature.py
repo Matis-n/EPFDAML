@@ -1,3 +1,6 @@
+import os, sys
+os.environ["EPFDAML"] = os.curdir
+sys.path.append(os.environ["EPFDAML"])
 from work.models.model_wrapper import *
 import work.model_utils as mu
 import datetime
