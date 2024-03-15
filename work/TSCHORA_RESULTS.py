@@ -1,3 +1,4 @@
+
 import pandas, copy, os, sys, tensorflow as tf
 # Skip this line if your gpu is set up
 os.environ["CUDA_VISIBLE_DEVICES"]="-1"
@@ -62,13 +63,13 @@ kwargs = {
     "base_dataset_name" : "2",
     "n_val" : 362,
     "models" : [MLPWrapper], # [LeNetWrapper, MLPWrapper, MultiSVR, ChainSVR, RFR],    
-    "countries" : ["DE"], # "DE", "BE"],
+    "countries" : ["BE"], # "DE", "BE"],
     
     # GRID SEARCH PARAMS
-    "fast" : True,
-    "n_combis" : 4,
+    "fast" : False,
+    "n_combis" : 200,
     "restart" : True,
-    "n_rep" : 1,
+    "n_rep" : 20,
     "stop_after" : 100,
     "n_cpus" : -1,
 

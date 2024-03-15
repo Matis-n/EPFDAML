@@ -48,6 +48,7 @@ def run(**kwargs):
                 
             if GRID_SEARCH:
                 for i in range(n_rep):
+                    print(f"REPETITION {i+1}/{n_rep}")
                     model_wrapper = run_grid_search(
                         name, dataset, model, country, base_dataset_name, fast,
                         n_combis, restart, stop_after, n_cpus, n_val)

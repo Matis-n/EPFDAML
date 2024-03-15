@@ -1,0 +1,46 @@
+
+Results for FRBE - EPF2 - MLP_TSCHORA_EPF2_FRBE
+                     MAE       MAPE      SMAPE       RMSE      RMAE       DAE
+General (FRBE)  5.721823  21.957466  15.008659  14.882179  0.736975  2.136997
+FR              4.791156  15.025672  13.934142  12.382026  0.714893  1.602307
+BE              6.652491  28.889260  16.083176  17.018929  0.753742  2.671687
+
+Results for ['FR', 'BE'] (single models concatenated) - EPF2 - MLP_TSCHORA_EPF2_['FR', 'BE']
+              MAE       MAPE      SMAPE       RMSE      RMAE       DAE
+General  5.744474  20.498599  14.617581  15.033421  0.739892  1.569685
+FR       4.590051  14.170610  13.132941  12.266955  0.684886  1.559840
+BE       6.898896  26.826587  16.102222  17.364599  0.781661  1.579529
+
+Results for DEBE - EPF2 - MLP_TSCHORA_EPF2_DEBE
+                     MAE          MAPE      SMAPE       RMSE      RMAE  \
+General (DEBE)  5.677762  1.082490e+14  18.201424  13.010289  0.705734   
+DE              4.742462  2.164981e+14  20.642291   6.484919  0.652834   
+BE              6.613062  2.897918e+01  15.760557  17.218626  0.749275   
+
+                     DAE  
+General (DEBE)  0.507860  
+DE              1.386799  
+BE              2.402519  
+
+Results for ['DE', 'BE'] (single models concatenated) - EPF2 - MLP_TSCHORA_EPF2_['DE', 'BE']
+              MAE          MAPE      SMAPE       RMSE      RMAE       DAE
+General  5.839589  4.498032e+14  18.520070  13.144095  0.725849  1.454649
+DE       4.780281  8.996065e+14  20.937918   6.633638  0.658040  1.329770
+BE       6.898896  2.682659e+01  16.102222  17.364599  0.781661  1.579529
+
+Results for FRDE - EPF2 - MLP_TSCHORA_EPF2_FRDE
+                     MAE          MAPE      SMAPE       RMSE      RMAE  \
+General (FRDE)  4.721460  1.776609e+14  17.053105   9.742371  0.676120   
+FR              4.767503  1.501061e+01  13.995295  12.193742  0.711364   
+DE              4.675417  3.553219e+14  20.110914   6.414067  0.643605   
+
+                     DAE  
+General (FRDE)  0.337502  
+FR              0.872886  
+DE              1.547890  
+
+Results for ['FR', 'DE'] (single models concatenated) - EPF2 - MLP_TSCHORA_EPF2_['FR', 'DE']
+              MAE          MAPE      SMAPE       RMSE      RMAE       DAE
+General  4.685166  4.498032e+14  17.035429   9.861119  0.670922  1.444805
+FR       4.590051  1.417061e+01  13.132941  12.266955  0.684886  1.559840
+DE       4.780281  8.996065e+14  20.937918   6.633638  0.658040  1.329770
